@@ -7,7 +7,7 @@
 
   <!-- PWA-inställningar för GitHub Pages -->
   <meta name="theme-color" content="#121316">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icon-512.png">
@@ -625,11 +625,18 @@
       }
     ];
 
-    let tasks = JSON.parse(localStorage.getItem('pwa_todo_tasks')) || defaultTasks;
+    let tasks = defaultTasks;
+    try {
+      const saved = JSON.parse(localStorage.getItem('pwa_todo_tasks'));
+      if (Array.isArray(saved)) tasks = saved;
+    } catch (e) {}
+
     let currentFilter = 'all';
 
     function saveTasks() {
-      localStorage.setItem('pwa_todo_tasks', JSON.stringify(tasks));
+      try {
+        localStorage.setItem('pwa_todo_tasks', JSON.stringify(tasks));
+      } catch (e) {}
     }
 
     function escapeHtml(str) {
@@ -695,4 +702,155 @@
     }
 
     function render() {
-      const doneTotal = tasks.filter(t => t.done).
+      const doneTotal = tasks.filter(t => t.done).length;
+      doneCountEl.textContent = doneTotal;
+      totalCountEl.textContent = tasks.length;
+
+      const filtered = tasks.filter(t => {
+        if (currentFilter === 'active') return !t.done;
+        if (currentFilter === 'completed') return t.done;
+        return true;
+      });
+
+      taskList.innerHTML = '';
+
+      if (filtered.length === 0) {
+        taskList.innerHTML = `<li class="empty-state">Inga uppgifter att visa här.</li>`;
+        return;
+      }
+
+      filtered.forEach(task => {
+        const subTotal = task.subtasks.length;
+        const subDone = task.subtasks.filter(s => s.done).length;
+        const pct = subTotal > 0 ? Math.round((subDone / subTotal) * 100) : 0;
+
+        const li = document.createElement('li');
+        li.className = `task-card ${task.done ? 'done' : ''}`;
+
+        li.innerHTML = `
+          <div class="task-header">
+            <div class="task-left">
+              <div class="checkbox"></div>
+              <div class="task-title-wrap">
+                <span class="task-title">${escapeHtml(task.title)}</span>
+                ${subTotal > 0 ? `
+                  <div class="subtask-badge">
+                    <span>${subDone}/${subTotal} delmoment</span>
+                    <div class="mini-progress">
+                      <div class="mini-progress-fill" style="width: ${pct}%"></div>
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            <div class="task-actions">
+              <button type="button" class="icon-btn expand ${task.expanded ? 'open' : ''}" title="Visa/dölj underuppgifter" aria-label="Visa underuppgifter">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <button type="button" class="icon-btn delete" title="Ta bort" aria-label="Ta bort uppgift">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="subtasks-panel ${task.expanded ? 'open' : ''}">
+            <ul class="subtask-list"></ul>
+            <form class="subtask-form">
+              <input type="text" placeholder="Lägg till underuppgift..." required autocomplete="off">
+              <button type="submit" class="btn-add-sub">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Lägg till</span>
+              </button>
+            </form>
+          </div>
+        `;
+
+        li.querySelector('.task-header').onclick = () => toggleTask(task.id);
+        li.querySelector('.expand').onclick = (e) => toggleExpand(task.id, e);
+        li.querySelector('.delete').onclick = (e) => deleteTask(task.id, e);
+
+        const subListEl = li.querySelector('.subtask-list');
+        task.subtasks.forEach(sub => {
+          const subLi = document.createElement('li');
+          subLi.className = `subtask-item ${sub.done ? 'done' : ''}`;
+          subLi.innerHTML = `
+            <div class="subtask-left">
+              <div class="sub-checkbox"></div>
+              <span class="subtask-text">${escapeHtml(sub.text)}</span>
+            </div>
+            <button type="button" class="icon-btn delete" aria-label="Ta bort underuppgift">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          `;
+          subLi.onclick = (e) => toggleSubtask(task.id, sub.id, e);
+          subLi.querySelector('.delete').onclick = (e) => deleteSubtask(task.id, sub.id, e);
+          subListEl.appendChild(subLi);
+        });
+
+        const subForm = li.querySelector('.subtask-form');
+        const subInput = subForm.querySelector('input');
+        subForm.onclick = (e) => e.stopPropagation();
+        subForm.onsubmit = (e) => {
+          e.preventDefault();
+          addSubtask(task.id, subInput.value);
+        };
+
+        taskList.appendChild(li);
+      });
+    }
+
+    taskForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = taskInput.value.trim();
+      if (!title) return;
+
+      tasks.unshift({
+        id: Date.now(),
+        title,
+        done: false,
+        expanded: true,
+        subtasks: []
+      });
+
+      taskInput.value = '';
+      saveTasks();
+      render();
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+      });
+    });
+
+    clearCompletedBtn.addEventListener('click', () => {
+      tasks = tasks.filter(t => !t.done);
+      saveTasks();
+      render();
+    });
+
+    render();
+
+    // Registrera Service Worker för offline-stöd
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
