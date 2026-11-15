@@ -1,4 +1,4 @@
-const CACHE_NAME = 'att-gora-v1';
+const CACHE_NAME = 'att-gora-v2';
 const ASSETS = [
   './',
   './index.html',
