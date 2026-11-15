@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Att-göra</title>
+
+  <!-- PWA-inställningar för GitHub Pages -->
+  <meta name="theme-color" content="#121316">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-512.png">
+
+  <!-- Typsnitt: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #121316;
+      --surface: #1b1d22;
+      --surface-elevated: #24272e;
+      --border: #2e323b;
+      --border-hover: #3f4451;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --muted-dark: #6b7280;
+      --accent: #f97316;
+      --accent-dark: #ea580c;
+      --accent-glow: rgba(249, 115, 22, 0.28);
+      --accent-soft: rgba(249, 115, 22, 0.14);
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 32px 18px 64px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sidhuvud */
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #24272e, #181a1f);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .title-group h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #ffffff 30%, #fdba74 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .date-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 4px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .date-pill svg {
+      color: var(--accent);
+    }
+
+    .header-stats {
+      text-align: right;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .stats-count {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stats-count span {
+      color: var(--accent);
+    }
+
+    .stats-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Huvudformulär */
+    .main-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 13px 16px;
+      border-radius: 13px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--muted-dark);
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .btn-add {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 13px;
+      padding: 0 18px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-add:hover {
+      filter: brightness(1.06);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-add:active {
+      transform: scale(0.96);
+    }
+
+    /* Filterflikar & Rensa-knapp */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .filters {
+      display: flex;
+      background: var(--surface);
+      padding: 4px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+
+    .filter-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-btn.active {
+      background: var(--surface-elevated);
+      color: var(--accent);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+
+    .clear-btn:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Uppgiftskort (Rubriker) */
+    .task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+
+    .task-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .task-header {
+      padding: 15px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .checkbox {
+      width: 23px;
+      height: 23px;
+      border-radius: 7px;
+      border: 2px solid var(--muted-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+    }
+
+    .task-card.done .checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .task-card.done .checkbox::after {
+      content: "✓";
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .task-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .task-card.done .task-title {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .subtask-badge {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini-progress {
+      width: 48px;
+      height: 4px;
+      background: var(--surface-elevated);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .mini-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.25s ease;
+    }
+
+    .task-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-elevated);
+      color: var(--text);
+    }
+
+    .icon-btn.delete:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .icon-btn.expand.open {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    /* Underuppgifter */
+    .subtasks-panel {
+      background: #16181c;
+      border-top: 1px solid var(--border);
+      padding: 12px 16px 14px 44px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .subtasks-panel.open {
+      display: flex;
+    }
+
+    .subtask-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .subtask-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .subtask-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .subtask-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .sub-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1.8px solid var(--muted-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .subtask-item.done .sub-checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .subtask-item.done .sub-checkbox::after {
+      content: "✓";
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .subtask-text {
+      font-size: 0.9rem;
+      color: #d1d5db;
+      word-break: break-word;
+    }
+
+    .subtask-item.done .subtask-text {
+      text-decoration: line-through;
+      color: var(--muted-dark);
+    }
+
+    .subtask-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .subtask-form input {
+      padding: 9px 12px;
+      font-size: 0.86rem;
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .btn-add-sub {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 0 13px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 10px var(--accent-glow);
+      transition: transform 0.12s ease, filter 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-add-sub:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-add-sub:active {
+      transform: scale(0.95);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <div class="brand-badge" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+      </div>
+      <div class="title-group">
+        <h1>Att-göra</h1>
+        <div class="date-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span id="current-date"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-stats">
+      <div class="stats-count"><span id="done-count">0</span> / <span id="total-count">0</span></div>
+      <div class="stats-label">klara idag</div>
+    </div>
+  </header>
+
+  <form class="main-form" id="task-form">
+    <input
+      type="text"
+      id="task-input"
+      placeholder="Ny rubrik eller uppgift..."
+      required
+      autocomplete="off"
+    >
+    <button type="submit" class="btn-add">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>Lägg till</span>
+    </button>
+  </form>
+
+  <div class="controls-bar">
+    <div class="filters" role="tablist">
+      <button type="button" class="filter-btn active" data-filter="all">Alla</button>
+      <button type="button" class="filter-btn" data-filter="active">Aktiva</button>
+      <button type="button" class="filter-btn" data-filter="completed">Klara</button>
+    </div>
+    <button type="button" class="clear-btn" id="clear-completed">Rensa klara</button>
+  </div>
+
+  <ul class="task-list" id="task-list"></ul>
+
+  <script>
+    const taskForm = document.getElementById('task-form');
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+    const dateEl = document.getElementById('current-date');
+    const doneCountEl = document.getElementById('done-count');
+    const totalCountEl = document.getElementById('total-count');
+    const clearCompletedBtn = document.getElementById('clear-completed');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    // Visa dagens datum på svenska
+    dateEl.textContent = new Date().toLocaleDateString('sv-SE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
+
+    // Standardexempel vid första besöket
+    const defaultTasks = [
+      {
+        id: 1,
+        title: 'Planera veckans träning',
+        done: false,
+        expanded: true,
+        subtasks: [
+          { id: 101, text: 'Måndag: Löpning 5 km', done: true },
+          { id: 102, text: 'Onsdag: Styrkepass överkropp', done: false }
+        ]
+      },
+      {
+        id: 2,
+        title: 'Handla mat inför helgen',
+        done: false,
+        expanded: false,
+        subtasks: [
+          { id: 201, text: 'Frukt och grönsaker', done: false },
+          { id: 202, text: 'Havregryn och kaffe', done: false }
+        ]
+      },
+      {
+        id: 3,
+        title: 'Publicera PWA på GitHub Pages',
+        done: true,
+        expanded: false,
+        subtasks: []
+      }
+    ];
+
+    let tasks = JSON.parse(localStorage.getItem('pwa_todo_tasks')) || defaultTasks;
+    let currentFilter = 'all';
+
+    function saveTasks() {
+      localStorage.setItem('pwa_todo_tasks', JSON.stringify(tasks));
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+      saveTasks();
+      render();
+    }
+
+    function toggleExpand(id, e) {
+      e.stopPropagation();
+      tasks = tasks.map(t => t.id === id ? { ...t, expanded: !t.expanded } : t);
+      saveTasks();
+      render();
+    }
+
+    function deleteTask(id, e) {
+      e.stopPropagation();
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      render();
+    }
+
+    function addSubtask(taskId, text) {
+      const clean = text.trim();
+      if (!clean) return;
+      tasks = tasks.map(t => {
+        if (t.id !== taskId) return t;
+        return {
+          ...t,
+          expanded: true,
+          subtasks: [...t.subtasks, { id: Date.now(), text: clean, done: false }]
+        };
+      });
+      saveTasks();
+      render();
+    }
+
+    function toggleSubtask(taskId, subId, e) {
+      e.stopPropagation();
+      tasks = tasks.map(t => {
+        if (t.id !== taskId) return t;
+        const updatedSubs = t.subtasks.map(s => s.id === subId ? { ...s, done: !s.done } : s);
+        return { ...t, subtasks: updatedSubs };
+      });
+      saveTasks();
+      render();
+    }
+
+    function deleteSubtask(taskId, subId, e) {
+      e.stopPropagation();
+      tasks = tasks.map(t => {
+        if (t.id !== taskId) return t;
+        return { ...t, subtasks: t.subtasks.filter(s => s.id !== subId) };
+      });
+      saveTasks();
+      render();
+    }
+
+    function render() {
+      const doneTotal = tasks.filter(t => t.done).

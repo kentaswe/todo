@@ -1,0 +1,19 @@
+{
+  "name": "Att-göra",
+  "short_name": "Att-göra",
+  "description": "Minimalistisk att-göra-lista med underuppgifter",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121316",
+  "theme_color": "#121316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
